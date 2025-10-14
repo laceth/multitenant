@@ -1,0 +1,45 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: workloads-matrix
+  namespace: argocd
+spec:
+  generators:
+  - matrix:
+      generators:
+      - list:
+          elements:
+          - { cluster: use1 }
+          - { cluster: usw2 }
+          - { cluster: usc1 }
+          - { cluster: use2 }
+      - matrix:
+          generators:
+          - list:
+              elements:
+              - { tenant: edu }
+              - { tenant: eng }
+              - { tenant: maint }
+              - { tenant: movie }
+          - list:
+              elements:
+              - { app: nginx }
+  template:
+    metadata:
+      name: "{{app}}-{{tenant}}-{{cluster}}"
+      labels:
+        tenant: "{{tenant}}"
+        cluster: "{{cluster}}"
+        app: "{{app}}"
+    spec:
+      project: "workloads-tenant-{{tenant}}"
+      destination:
+        name: "{{cluster}}"
+        namespace: default
+      source:
+        repoURL: https://github.com/laceth/multitenant.git
+        targetRevision: HEAD
+        path: "apps/{{tenant}}/{{cluster}}/{{app}}"
+        directory: { recurse: true }
+      syncPolicy:
+        automated: { prune: true, selfHeal: true }

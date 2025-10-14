@@ -1,0 +1,18 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: workloads-tenant-eng
+  namespace: argocd
+spec:
+  description: eng tenant
+  sourceRepos:
+  - '*'
+  destinations:
+  - server: '*'
+    namespace: '*'
+  clusterResourceWhitelist:
+  - group: '*'
+    kind: '*'
+  namespaceResourceWhitelist:
+  - group: '*'
+    kind: '*'

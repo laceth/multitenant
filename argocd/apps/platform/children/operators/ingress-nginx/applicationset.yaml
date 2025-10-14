@@ -1,0 +1,36 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: ingress-nginx-per-cluster
+  namespace: argocd
+spec:
+  generators:
+  - list:
+      elements:
+      - { cluster: use1 }
+      - { cluster: usw2 }
+      - { cluster: usc1 }
+      - { cluster: use2 }
+  template:
+    metadata:
+      name: ingress-nginx-{{cluster}}
+      namespace: argocd
+      annotations:
+        argocd.argoproj.io/sync-options: CreateNamespace=true
+    spec:
+      project: default
+      destination:
+        name: "{{cluster}}"
+        namespace: ingress-nginx
+      source:
+        repoURL: https://kubernetes.github.io/ingress-nginx
+        chart: ingress-nginx
+        targetRevision: 4.11.1
+        helm:
+          values: |
+            controller:
+              service:
+                type: LoadBalancer
+      syncPolicy:
+        automated: { prune: true, selfHeal: true }
+
