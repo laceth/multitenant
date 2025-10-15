@@ -5,11 +5,16 @@ metadata:
   namespace: argocd
 spec:
   description: edu tenant
+  
   sourceRepos:
-  - '*'
+  - https://github.com/laceth/multitenant.git
+  - https://kubernetes.github.io/ingress-nginx
+  - https://metallb.github.io/metallb
+  #sourceRepos:
+  #- '*'
   destinations:
   - server: '*'
-    namespace: '*'
+    namespace: tenant-edu-*
   clusterResourceWhitelist:
   - group: '*'
     kind: '*'

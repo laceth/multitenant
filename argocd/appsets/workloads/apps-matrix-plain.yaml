@@ -35,7 +35,7 @@ spec:
       project: "workloads-tenant-{{tenant}}"
       destination:
         name: "{{cluster}}"
-        namespace: default
+        namespace: "tenant-{{tenant}}"
       source:
         repoURL: https://github.com/laceth/multitenant.git
         targetRevision: HEAD

@@ -5,11 +5,17 @@ metadata:
   namespace: argocd
 spec:
   description: movie tenant
+  
   sourceRepos:
-  - '*'
+  - https://github.com/laceth/multitenant.git
+  - https://kubernetes.github.io/ingress-nginx
+  - https://metallb.github.io/metallb
+
+  #sourceRepos:
+  #- '*'
   destinations:
   - server: '*'
-    namespace: '*'
+    namespace: tenant-movie-*
   clusterResourceWhitelist:
   - group: '*'
     kind: '*'

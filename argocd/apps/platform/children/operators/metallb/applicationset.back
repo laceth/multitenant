@@ -1,0 +1,39 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: metallb-per-cluster
+  namespace: argocd
+spec:
+  generators:
+  - list:
+      elements:
+      - { cluster: use1, pool: "172.18.255.200-172.18.255.209" }
+      - { cluster: usw2, pool: "172.18.255.210-172.18.255.219" }
+      - { cluster: usc1, pool: "172.18.255.220-172.18.255.229" }
+      - { cluster: use2, pool: "172.18.255.230-172.18.255.239" }
+  template:
+    metadata:
+      name: metallb-{{cluster}}
+      namespace: argocd
+      annotations:
+        argocd.argoproj.io/sync-options: CreateNamespace=true
+    spec:
+      project: default
+      destination:
+        name: "{{cluster}}"
+        namespace: metallb-system
+      source:
+        repoURL: https://metallb.github.io/metallb
+        chart: metallb
+        targetRevision: 0.14.9
+        helm:
+          values: |
+            ipAddressPools:
+              - name: default
+                autoAssign: true
+                addresses: ["{{pool}}"]
+            l2Advertisements:
+              - {}
+      syncPolicy:
+        automated: { prune: true, selfHeal: true }
+

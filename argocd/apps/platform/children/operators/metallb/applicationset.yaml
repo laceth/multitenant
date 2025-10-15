@@ -1,39 +1,43 @@
 apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
 metadata:
-  name: metallb-per-cluster
+  name: metallb-all-clusters
   namespace: argocd
 spec:
   generators:
   - list:
       elements:
-      - { cluster: use1, pool: "172.18.255.200-172.18.255.209" }
-      - { cluster: usw2, pool: "172.18.255.210-172.18.255.219" }
-      - { cluster: usc1, pool: "172.18.255.220-172.18.255.229" }
-      - { cluster: use2, pool: "172.18.255.230-172.18.255.239" }
+      - { name: use1, pool: "172.18.255.200-172.18.255.209" }
+      - { name: usw2, pool: "172.18.255.210-172.18.255.219" }
+      - { name: usc1, pool: "172.18.255.220-172.18.255.229" }
+      - { name: use2, pool: "172.18.255.230-172.18.255.239" }
   template:
     metadata:
-      name: metallb-{{cluster}}
-      namespace: argocd
-      annotations:
-        argocd.argoproj.io/sync-options: CreateNamespace=true
+      name: metallb-{{name}}
     spec:
       project: default
       destination:
-        name: "{{cluster}}"
+        name: "{{name}}"
         namespace: metallb-system
       source:
         repoURL: https://metallb.github.io/metallb
         chart: metallb
-        targetRevision: 0.14.9
+        targetRevision: 0.14.5     # if this exact version 404s, bump to the latest
         helm:
+          releaseName: metallb
           values: |
-            ipAddressPools:
+            controller:
+              enabled: true
+            speaker:
+              enabled: true
+            configInline:
+              address-pools:
               - name: default
-                autoAssign: true
-                addresses: ["{{pool}}"]
-            l2Advertisements:
-              - {}
+                protocol: layer2
+                addresses:
+                - {{pool}}
       syncPolicy:
-        automated: { prune: true, selfHeal: true }
+        automated:
+          prune: true
+          selfHeal: true
 
