@@ -1,0 +1,19 @@
+apiVersion: metallb.io/v1beta1
+kind: IPAddressPool
+metadata:
+  name: usc1-pool
+  namespace: metallb-system
+spec:
+  addresses:
+    - 172.18.255.220-172.18.255.229
+---
+apiVersion: metallb.io/v1beta1
+kind: L2Advertisement
+metadata:
+  name: usc1-l2
+  namespace: metallb-system
+spec:
+  ipAddressPools:
+    - usc1-pool
+
+

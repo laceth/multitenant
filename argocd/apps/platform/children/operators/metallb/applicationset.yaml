@@ -30,12 +30,7 @@ spec:
               enabled: true
             speaker:
               enabled: true
-            configInline:
-              address-pools:
-              - name: default
-                protocol: layer2
-                addresses:
-                - {{pool}}
+            
       syncPolicy:
         automated:
           prune: true
