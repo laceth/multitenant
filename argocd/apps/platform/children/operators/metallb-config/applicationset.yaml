@@ -1,0 +1,31 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: metallb-config
+  namespace: argocd
+spec:
+  generators:
+    - list:
+        elements:
+          - name: use1
+          - name: usw2
+          - name: usc1
+          - name: use2
+  template:
+    metadata:
+      name: metallb-config-{{name}}
+      annotations:
+        argocd.argoproj.io/sync-wave: "10"   # apply after the Helm app
+    spec:
+      project: default
+      destination:
+        name: "{{name}}"
+        namespace: metallb-system
+      source:
+        repoURL: https://github.com/your-org/your-gitops-repo   # <-- change to your repo
+        targetRevision: HEAD
+        path: apps/platform/{{name}}/metallb/config
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
