@@ -5,17 +5,22 @@ metadata:
   namespace: argocd
 spec:
   description: maint tenant
-  
+
   sourceRepos:
   - https://github.com/laceth/multitenant.git
   - https://kubernetes.github.io/ingress-nginx
   - https://metallb.github.io/metallb
 
-  #sourceRepos:
-  #- '*'
   destinations:
+  - name: '*'
+    namespace: tenant-maint
+  - name: '*'
+    namespace: tenant-maint-*
   - server: '*'
     namespace: tenant-maint
+  - server: '*'
+    namespace: tenant-maint-*
+
   clusterResourceWhitelist:
   - group: '*'
     kind: '*'
