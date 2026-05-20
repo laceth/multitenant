@@ -15,7 +15,7 @@ spec:
   #- '*'
   destinations:
   - server: '*'
-    namespace: tenant-maint-*
+    namespace: tenant-maint
   clusterResourceWhitelist:
   - group: '*'
     kind: '*'
